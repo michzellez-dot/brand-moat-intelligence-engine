@@ -2,13 +2,11 @@ name: Automated Brand Moat Pipeline
 
 on:
   schedule:
-    # Runs automatically every Sunday at 00:00 UTC (Midnight)
     - cron: '0 0 * * 0'
-  # Allows you to manually trigger the pipeline anytime via a button in GitHub
   workflow_dispatch:
 
 permissions:
-  contents: write  # Grants permission to commit and push updated charts back to the repo
+  contents: write
 
 jobs:
   run-pipeline:
@@ -17,6 +15,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,4 +37,5 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add brand_moat_chart.png brand_moat_summary.csv reddit_brand_comments_classified.csv reddit_brand_comments.csv
           git commit -m "chore: auto-update brand moat metrics and chart [skip ci]" || echo "No changes to commit"
+          git pull --rebase origin main
           git push
